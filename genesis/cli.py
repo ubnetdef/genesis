@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 from datetime import datetime
+from distutils.dir_util import copy_tree
 from genesis import __description__
 from genesis.deploy import DeployStrategy
 from genesis.generators.ansible import Ansible
@@ -15,6 +16,7 @@ def cli_main(base_dir=None):
 	parser.add_argument('--config', help='Competition YAML file to deploy from', type=argparse.FileType('r'), required=True)
 	parser.add_argument('--teams', help='Amount of teams to deploy the competition for', type=int, required=True)
 	parser.add_argument('--output', help='Output directory for genesis. Defaults to the deploy folder in genesis.', required=output_arg_required)
+	parser.add_argument('--data', help='Data directory for genesis. Defaults to the data folder in genesis.', required=output_arg_required)
 	parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure.', action='store_true', default=False)
 	parser.add_argument('--only-deploy', help='Only deploy certain hosts. This contains the host IDs.', nargs='+')
 	parser.add_argument('--start-team-number', help='Team number to start at', type=int, default=1)
@@ -34,6 +36,13 @@ def cli_main(base_dir=None):
 		args.output = "{}/deploy/{}".format(base_dir, deploy_name)
 
 		logger.debug('"--output" not configured. Setting it up to be: {}'.format(args.output))
+
+	# Automagically handle "--data"
+	if not output_arg_required and args.data is None:
+		data_dir = "{}/data".format(base_dir)
+		args.data = data_dir
+
+		logger.debug('"--data" not configured. Setting it up to be: {}'.format(data_dir))
 
 	# Cleanup "--only-deploy"
 	if args.only_deploy is not None and \
@@ -96,6 +105,17 @@ def main(logger, args):
 			fp.write(ansible_config)
 
 		# Copy the roles over from genesis for ansible
+		copy_tree("{}/ansible-roles".format(args.data), "{}/roles".format(step_dir))
+
+		# Copy over included data with config, if it has any
+		if config.get('has_included_data', False):
+			extra_dir = os.path.dirname(os.path.realpath(args.config.name))
+
+			for data in config.get('included_copy_data', []):
+				src_dir = '{}/{}'.format(extra_dir, data)
+
+				logger.debug('Copying: {}'.format(src_dir))
+				copy_tree(src_dir, '{}/{}'.format(step_dir, data))
 
 		if not args.dry_run:
 			# Run terraform
