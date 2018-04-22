@@ -57,6 +57,10 @@ def main(logger, args):
 	p = YamlParser(args)
 	config = p.parse()
 
+	# Print out some info about the config
+	logger.info('Competition Config: {}'.format(config['name']))
+	logger.info(config['description'])
+
 	# Deal with max teams
 	if 'max_teams' in config and args.teams > config['max_teams']:
 		raise Exception('Config only allows a max of {} teams to be created'.format(config['max_teams']))
