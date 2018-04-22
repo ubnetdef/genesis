@@ -1,9 +1,15 @@
+import logging
+
 class DeployStrategy(object):
+	MAX_VMS_PER_STEP = 10
+
 	def __init__(self, args, config):
 		self.args = args
 		self.config = config
 		self.nodes = {}
 		self.strategy = []
+
+		self.logger = logging.getLogger(__name__)
 
 		# Create a deploy strategy
 		self.plan_deploy()
@@ -41,17 +47,37 @@ class DeployStrategy(object):
 		if len(self.strategy) == 0:
 			raise Exception('No valid strategy calculated')
 
+		chunking_additional_steps = 0
 		for step, strategy in enumerate(self.strategy):
 			# Build the team config that need to be deployed
 			teams = []
+			vms_deployed_in_step = 0
+			step_chunked = False
 
 			for team in self.config['teams']:
+				if vms_deployed_in_step >= self.MAX_VMS_PER_STEP:
+					self.logger.debug('Deployed more than {} VMs in step #{} ({}). Chunking.'.format(self.MAX_VMS_PER_STEP,
+						step, vms_deployed_in_step))
+					self.logger.debug('Chunking steps = {}. Strategy step = {}'.format(chunking_additional_steps, step))
+					step_chunked = True
+
+					yield chunking_additional_steps + step, teams
+
+					# Reset
+					vms_deployed_in_step = 0
+					chunking_additional_steps += 1
+					teams = []
+
+				hosts = [x for x in team['hosts'] if x['id'] in strategy]
+				vms_deployed_in_step += len(hosts)
+
 				teams.append({
 					'team': team['team'],
-					'hosts': [x for x in team['hosts'] if x['id'] in strategy]
+					'hosts': hosts
 				})
 
-			yield step, teams
+			if vms_deployed_in_step > 0:
+				yield chunking_additional_steps + step, teams
 
 
 class Node(object):
