@@ -31,6 +31,10 @@ def main(args):
 	p = YamlParser(args)
 	config = p.parse()
 
+	# Deal with max teams
+	if 'max_teams' in config and args.teams > config['max_teams']:
+		raise Exception('Config only allows a max of {} teams to be created'.format(config['max_teams']))
+
 	# Deal with dependency resolution
 	strategy = DeployStrategy(config)
 

@@ -47,7 +47,7 @@ class Ansible(BaseGenerator):
 				for role_name, role_config in host.get('roles', {}).items():
 					if role_config is not None:
 						for key, val in role_config.items():
-							inline_cfg.append('{}={}'.format(key, val))
+							inline_cfg.append('{}="{}"'.format(key, val))
 
 				groups[host['id']]['hosts'].append(primary_ip)
 				groups[host['id']]['inline'].append(inline_cfg)
