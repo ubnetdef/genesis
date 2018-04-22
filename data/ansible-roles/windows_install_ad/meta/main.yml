@@ -1,0 +1,11 @@
+galaxy_info:
+  author: James Droste
+  description: Installs and sets up a basic forest for Windows Active Directory
+  company: UBNetDef
+
+  issue_tracker_url: https://github.com/ubnetdef/genesis
+  license: MIT
+
+  min_ansible_version: 1.2
+
+dependencies: []

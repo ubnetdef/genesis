@@ -1,0 +1,4 @@
+---
+domain: "example.com"
+netbiosname: "EXAMPLE"
+adbackuppass: "Changeme1!"
