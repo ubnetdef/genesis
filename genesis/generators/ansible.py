@@ -59,6 +59,7 @@ class Ansible(BaseGenerator):
 			out.append('[{}]'.format(gid))
 			for i, ip in enumerate(cfg['hosts']):
 				out.append('{}\t{}'.format(ip, ' '.join(cfg['inline'][i])))
+			out.append('')
 
 		# Build the connection variables
 		for host in self.deploy[0]['hosts']:
@@ -77,6 +78,8 @@ class Ansible(BaseGenerator):
 				out.append('ansible_password="{}"'.format(tpl['password']))
 			else:
 				raise Exception('Unknown OS: {}'.format(tpl['os']))
+
+			out.append('')
 
 		return '\n'.join(out)
 

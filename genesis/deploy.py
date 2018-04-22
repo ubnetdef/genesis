@@ -1,5 +1,6 @@
 class DeployStrategy(object):
-	def __init__(self, config):
+	def __init__(self, args, config):
+		self.args = args
 		self.config = config
 		self.nodes = {}
 		self.strategy = []
@@ -10,6 +11,10 @@ class DeployStrategy(object):
 	def plan_deploy(self):
 		# Create the nodes
 		for host in self.config['hosts']:
+			# Handle if we're only deploying certain hosts
+			if self.args.only_deploy is not None and host['id'] not in self.args.only_deploy:
+				continue
+
 			self.nodes[host['id']] = Node(host['id'], host.get('dependency', []))
 
 		# Keep creating strategies until we have no nodes
@@ -34,7 +39,7 @@ class DeployStrategy(object):
 
 	def generate_steps(self):
 		if len(self.strategy) == 0:
-			raise Exception('No validated strategy calculated')
+			raise Exception('No valid strategy calculated')
 
 		for step, strategy in enumerate(self.strategy):
 			# Build the team config that need to be deployed
