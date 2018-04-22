@@ -55,6 +55,11 @@ class Terraform(BaseGenerator):
 		configured = []
 		for team in self.deploy:
 			for host in team['hosts']:
+				if host['template'] not in self.templates:
+					raise Exception('Failed to find template for {}'.format(host['template']))
+
+				template = self.templates[host['template']]
+
 				if 'dc_{}'.format(host['datacenter']) not in configured:
 					data.append(self._gen_datacenter(host['datacenter']))
 					configured.append('dc_{}'.format(host['datacenter']))
@@ -68,16 +73,6 @@ class Terraform(BaseGenerator):
 					configured.append('pool_{}'.format(host['resource_pool']))
 
 				if 'tpl_{}'.format(host['template']) not in configured:
-					# Grab the template
-					template = None
-					for tpl in self.config['templates']:
-						if tpl['id'] == host['template']:
-							template = tpl
-							break
-
-					if template is None:
-						raise Exception('Failed to find template for {}'.format(host['template']))
-
 					data.append(self._gen_template(template['template'], host['datacenter']))
 					configured.append('tpl_{}'.format(host['template']))
 

@@ -12,6 +12,10 @@ class BaseGenerator(object):
 		self.config = config
 		self.deploy = deploy
 
+		self.templates = {}
+		for tpl in config['templates']:
+			self.templates[tpl['id']] = tpl
+
 	def validate(self):
 		return True
 

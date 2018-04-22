@@ -26,13 +26,6 @@ class Ansible(BaseGenerator):
 	}
 	"""
 
-	def __init__(self, config, deploy):
-		self.templates = {}
-		for tpl in config['templates']:
-			self.templates[tpl['id']] = tpl
-
-		super().__init__(config, deploy)
-
 	def generate(self):
 		# Return a tuple
 		return self._generate_hosts(), self._generate_deploy()

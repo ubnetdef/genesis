@@ -39,7 +39,6 @@ class DeployStrategy(object):
 		for step, strategy in enumerate(self.strategy):
 			# Build the team config that need to be deployed
 			teams = []
-			to_remove = []
 
 			for team in self.config['teams']:
 				teams.append({

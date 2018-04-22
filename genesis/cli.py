@@ -1,5 +1,4 @@
 import argparse
-import pprint
 import os
 from genesis import __description__
 from genesis.deploy import DeployStrategy
