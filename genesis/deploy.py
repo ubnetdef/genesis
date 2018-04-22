@@ -1,8 +1,6 @@
 import logging
 
 class DeployStrategy(object):
-	MAX_VMS_PER_STEP = 10
-
 	def __init__(self, args, config):
 		self.args = args
 		self.config = config
@@ -55,8 +53,8 @@ class DeployStrategy(object):
 			step_chunked = False
 
 			for team in self.config['teams']:
-				if vms_deployed_in_step >= self.MAX_VMS_PER_STEP:
-					self.logger.debug('Deployed more than {} VMs in step #{} ({}). Chunking.'.format(self.MAX_VMS_PER_STEP,
+				if vms_deployed_in_step >= self.args.batch_deploys:
+					self.logger.debug('Deployed more than {} VMs in step #{} ({}). Chunking.'.format(self.args.batch_deploys,
 						step, vms_deployed_in_step))
 					self.logger.debug('Chunking steps = {}. Strategy step = {}'.format(chunking_additional_steps, step))
 					step_chunked = True

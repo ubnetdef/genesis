@@ -21,6 +21,7 @@ def cli_main(base_dir=None):
 	parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure.', action='store_true', default=False)
 	parser.add_argument('--only-deploy', help='Only deploy certain hosts. This contains the host IDs.', nargs='+')
 	parser.add_argument('--start-team-number', help='Team number to start at', type=int, default=1)
+	parser.add_argument('--batch-deploys', help='Batch VM deploys', type=int, default=9999)
 	parser.add_argument('--debug', help='Enable debug mode', action='store_true', default=False)
 
 	args = parser.parse_args()
