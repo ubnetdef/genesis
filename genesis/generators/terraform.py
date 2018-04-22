@@ -73,7 +73,7 @@ class Terraform(BaseGenerator):
 					configured.append('pool_{}'.format(host['resource_pool']))
 
 				if 'tpl_{}'.format(host['template']) not in configured:
-					data.append(self._gen_template(template['template'], host['datacenter']))
+					data.append(self._gen_template(template['id'], template['template'], host['datacenter']))
 					configured.append('tpl_{}'.format(host['template']))
 
 				for net in host['networks']:
@@ -81,7 +81,7 @@ class Terraform(BaseGenerator):
 						data.append(self._gen_network(net['adapter'], host['datacenter']))
 						configured.append('net_{}'.format(net['adapter']))
 
-				data.append(self._gen_vm(host, template))
+				data.append(self._gen_vm(host, template, team['team']))
 
 		return '\n'.join(data)
 
@@ -91,7 +91,7 @@ class Terraform(BaseGenerator):
 			'\tuser = "{}"'.format(user),
 			'\tpassword = "{}"'.format(passwd),
 			'\tvsphere_server = "{}"'.format(server),
-			'\tallow_unverified_ssl = {}'.format(unverified_ssl)
+			'\tallow_unverified_ssl = {}'.format('true' if unverified_ssl else 'false')
 		]
 
 		if alias is not None:
@@ -132,17 +132,17 @@ class Terraform(BaseGenerator):
 			'}'
 		])
 
-	def _gen_template(self, name, datacenter):
+	def _gen_template(self, name, template, datacenter):
 		return '\n'.join([
 			'data "vsphere_virtual_machine" "{}" {{'.format(self._id(name)),
-			'\tname = "{}"'.format(name),
+			'\tname = "{}"'.format(template),
 			'\tdatacenter_id = "${{data.vsphere_datacenter.{}.id}}"'.format(self._id(datacenter)),
 			'}'
 		])
 
-	def _gen_vm(self, host, template):
+	def _gen_vm(self, host, template, team):
 		out = [
-			'resource "vsphere_virtual_machine" "{}" {{'.format(self._id(host['name'])),
+			'resource "vsphere_virtual_machine" "{}" {{'.format(self._id(host['name'] + team)),
 			'\tname = "{}"'.format(host['name']),
 			'\tfolder = "{}"'.format(host['folder']),
 			'\tresource_pool_id = "${{data.vsphere_resource_pool.{}.id}}"'.format(self._id(host['resource_pool'])),
@@ -164,7 +164,7 @@ class Terraform(BaseGenerator):
 		for disk in host['disks']:
 			out.append('\tdisk {')
 			out.append('\t\tlabel = "{}"'.format(disk['label']))
-			out.append('\t\tsize = '.format(disk['size']))
+			out.append('\t\tsize = {}'.format(disk['size']))
 			out.append('\t\tthin_provisioned = "${{data.vsphere_virtual_machine.{}.disks.0.thin_provisioned}}"'.format(self._id(host['template'])))
 			out.append('\t}')
 

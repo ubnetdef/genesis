@@ -8,6 +8,7 @@ from genesis.deploy import DeployStrategy
 from genesis.generators.ansible import Ansible
 from genesis.generators.terraform import Terraform
 from genesis.parser import YamlParser
+from shutil import copyfile
 
 def cli_main(base_dir=None):
 	parser = argparse.ArgumentParser(description=__description__)
@@ -105,6 +106,7 @@ def main(logger, args):
 			fp.write(ansible_config)
 
 		# Copy the roles over from genesis for ansible
+		logger.debug('Copying: {}/ansible-roles -> {}/roles'.format(args.data, step_dir))
 		copy_tree("{}/ansible-roles".format(args.data), "{}/roles".format(step_dir))
 
 		# Copy over included data with config, if it has any
@@ -112,10 +114,15 @@ def main(logger, args):
 			extra_dir = os.path.dirname(os.path.realpath(args.config.name))
 
 			for data in config.get('included_copy_data', []):
-				src_dir = '{}/{}'.format(extra_dir, data)
+				src = '{}/{}'.format(extra_dir, data)
+				dst = '{}/{}'.format(step_dir, data)
 
-				logger.debug('Copying: {}'.format(src_dir))
-				copy_tree(src_dir, '{}/{}'.format(step_dir, data))
+				logger.debug('Copying: {} -> {}'.format(src, dst))
+
+				if os.path.isdir(src):
+					copy_tree(src, dst)
+				else:
+					copyfile(src, dst)
 
 		if not args.dry_run:
 			# Run terraform
