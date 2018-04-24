@@ -7,6 +7,7 @@ from genesis import __description__
 from genesis.deploy import DeployStrategy
 from genesis.generators.ansible import Ansible
 from genesis.generators.terraform import Terraform
+from genesis.generators.postprovision import CustomPostProvision
 from genesis.parser import YamlParser
 from shutil import copyfile
 
@@ -56,6 +57,10 @@ def cli_main(base_dir=None):
 	main(logger, args)
 
 def main(logger, args):
+	# Timer
+	main_start_time = datetime.now()
+	logger.info('Genesis started on: {}'.format(main_start_time))
+
 	# Ensure the output folder exists, if not create it
 	if not os.path.exists(args.output):
 		logger.debug('Output folder ({}) does not exist. Creating.'.format(args.output))
@@ -83,6 +88,7 @@ def main(logger, args):
 		logger.info('Dry run enabled. Will not be running terraform and ansible.')
 
 	for step, deploy_config in strategy.generate_steps():
+		step_start_time = datetime.now()
 		logger.debug('Deployment strategy run #{}'.format(step))
 
 		# Create the step directory
@@ -96,6 +102,13 @@ def main(logger, args):
 		with open("{}/deploy.tf".format(step_dir), 'w') as fp:
 			fp.write(tf.generate())
 
+		# Custom provisioners for snowflakes
+		pp = CustomPostProvision(config, deploy_config)
+		pp_data = pp.generate()
+		if pp_data is not None:
+			with open("{}/deploy-postprovision.yml".format(step_dir), 'w') as fp:
+				fp.write(pp_data)
+
 		# Generate the ansible stuff
 		ansible = Ansible(config, deploy_config)
 		ansible_hosts, ansible_config = ansible.generate()
@@ -103,12 +116,17 @@ def main(logger, args):
 		with open("{}/hosts".format(step_dir), 'w') as fp:
 			fp.write(ansible_hosts)
 
-		with open("{}/deploy.yml".format(step_dir), 'w') as fp:
+		with open("{}/deploy-configure.yml".format(step_dir), 'w') as fp:
 			fp.write(ansible_config)
 
 		# Copy the roles over from genesis for ansible
 		logger.debug('Copying: {}/ansible-roles -> {}/roles'.format(args.data, step_dir))
 		copy_tree("{}/ansible-roles".format(args.data), "{}/roles".format(step_dir))
+
+		# Copy over custom post provision stuff (hardcoded ATM)
+		if pp_data is not None:
+			logger.debug('Copying: {}/ansible-pfsense-provision -> {}/roles'.format(args.data, step_dir))
+			copy_tree("{}/ansible-pfsense-provision".format(args.data), "{}/roles".format(step_dir))
 
 		# Copy over included data with config, if it has any
 		if config.get('has_included_data', False):
@@ -128,7 +146,15 @@ def main(logger, args):
 		if not args.dry_run:
 			# Run terraform
 
+			# Run custom provisioners
+
 			# Run ansible
 			pass
 
+		# Done
+		step_run_time = datetime.now() - step_start_time
+		logger.info('Deployment strategy #{} completed in {}s'.format(step, step_run_time.total_seconds()))
+
 	# Done
+	main_run_time = datetime.now() - main_start_time
+	logger.info('Genesis completed in {}s'.format(main_run_time.total_seconds()))

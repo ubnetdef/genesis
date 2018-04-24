@@ -1,0 +1,17 @@
+---
+- name: pfSense Network Provision
+  vmware_vm_shell:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_user }}"
+    password: "{{ vcenter_pass }}"
+    datacenter: "{{ vcenter_dc }}"
+    validate_certs: False
+    folder: "{{ vm_folder }}"
+    vm_id: "{{ vm_id }}"
+    vm_id_type: "inventory_path"
+    vm_username: "{{ vm_user }}"
+    vm_password: "{{ vm_pass }}"
+    vm_shell: /usr/local/sbin/pfSsh.php
+    vm_shell_args: playback provision {{ cfg_gw }} {{ cfg_wan }} {{ cfg_lan }} {{ cfg_opt }}
+    vm_shell_cwd: "/tmp"
+  delegate_to: localhost
