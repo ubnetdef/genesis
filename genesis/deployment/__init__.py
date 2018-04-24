@@ -1,8 +1,14 @@
 import hashlib
 import logging
+import os
 from abc import abstractmethod
+from distutils.dir_util import copy_tree
+from shutil import copyfile
 
-class BaseGenerator(object):
+class BaseDeployer(object):
+	NAME = "Unconfigured"
+	DESC = "Unconfigured"
+
 	ATTR_MAP = {}
 
 	LINUX_OS = ['pfsense', 'ubuntu', 'centos']
@@ -19,22 +25,29 @@ class BaseGenerator(object):
 		"",
 	]
 
-	def __init__(self, config, deploy):
+	def __init__(self, step, config, args, deploy):
+		self.step = step
 		self.config = config
+		self.args = args
 		self.deploy = deploy
 
 		self.logger = logging.getLogger(__name__)
 
-		self.templates = {}
-		for tpl in config['templates']:
-			self.templates[tpl['id']] = tpl
-
-	def validate(self):
-		return True
+	@abstractmethod
+	def generate(self, data):
+		pass
 
 	@abstractmethod
-	def generate(self):
+	def execute(self):
 		pass
 
 	def _id(self, name):
 		return hashlib.md5(name.encode('utf-8')).hexdigest()
+
+	def _copy(self, src, dst):
+		self.logger.debug('Copying {} -> {}'.format(src, dst))
+
+		if os.path.isdir(src):
+			copy_tree(src, dst)
+		else:
+			copyfile(src, dst)

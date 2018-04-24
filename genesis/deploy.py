@@ -75,8 +75,32 @@ class DeployStrategy(object):
 				})
 
 			if vms_deployed_in_step > 0:
-				yield chunking_additional_steps + step, teams
+				yield chunking_additional_steps + step, Deploy(self.config, teams)
 
+
+class Deploy(object):
+	def __init__(self, config, deploy):
+		self.config = config
+		self.deploy = deploy
+		self.templates = {}
+		self.template_hosts = []
+		self.deploy_hosts = []
+		self.flat_deploy = []
+
+		# Build the templates
+		for tpl in config['templates']:
+			self.templates[tpl['id']] = tpl
+
+		# Build a list of templates that are being deployed
+		for team in deploy:
+			for host in team['hosts']:
+				if host['template'] not in self.template_hosts:
+					self.template_hosts.append(host['template'])
+
+				if host['id'] not in self.deploy_hosts:
+					self.deploy_hosts.append(host)
+
+				self.flat_deploy.append(host)
 
 class Node(object):
 	def __init__(self, name, deps):

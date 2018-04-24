@@ -1,15 +1,12 @@
 import argparse
 import logging
 import os
+import sys
 from datetime import datetime
-from distutils.dir_util import copy_tree
 from genesis import __description__
 from genesis.deploy import DeployStrategy
-from genesis.generators.ansible import Ansible
-from genesis.generators.terraform import Terraform
-from genesis.generators.postprovision import CustomPostProvision
+from genesis.deployment.dispatcher import DeployDispatcher
 from genesis.parser import YamlParser
-from shutil import copyfile
 
 def cli_main(base_dir=None):
 	parser = argparse.ArgumentParser(description=__description__)
@@ -70,8 +67,12 @@ def main(logger, args):
 		raise Exception('Folder "{}" is not writable'.format(args.output))
 
 	# Parse the config
-	p = YamlParser(args)
-	config = p.parse()
+	try:
+		p = YamlParser(args)
+		config = p.parse()
+	except Exception as e:
+		logger.critical('Error in parsing YAML: {}'.format(e))
+		sys.exit(1)
 
 	# Print out some info about the config
 	logger.info('Competition Config: {}'.format(config['name']))
@@ -79,7 +80,8 @@ def main(logger, args):
 
 	# Deal with max teams
 	if 'max_teams' in config and args.teams > config['max_teams']:
-		raise Exception('Config only allows a max of {} teams to be created'.format(config['max_teams']))
+		logger.critical('Config only allows a max of {} teams to be created'.format(config['max_teams']))
+		sys.exit(1)
 
 	# Deal with dependency resolution
 	strategy = DeployStrategy(args, config)
@@ -91,65 +93,20 @@ def main(logger, args):
 		step_start_time = datetime.now()
 		logger.debug('Deployment strategy run #{}'.format(step))
 
-		# Create the step directory
-		step_dir = "{}/step{}".format(args.output, step)
-		if not os.path.exists(step_dir):
-			logger.debug('Creating step directory: {}'.format(step_dir))
-			os.makedirs(step_dir)
+		dispatcher = DeployDispatcher(step, config, args, deploy_config)
 
-		# Generate the terraform stuff
-		tf = Terraform(config, deploy_config)
-		with open("{}/deploy.tf".format(step_dir), 'w') as fp:
-			fp.write(tf.generate())
-
-		# Custom provisioners for snowflakes
-		pp = CustomPostProvision(config, deploy_config)
-		pp_data = pp.generate()
-		if pp_data is not None:
-			with open("{}/deploy-postprovision.yml".format(step_dir), 'w') as fp:
-				fp.write(pp_data)
-
-		# Generate the ansible stuff
-		ansible = Ansible(config, deploy_config)
-		ansible_hosts, ansible_config = ansible.generate()
-
-		with open("{}/hosts".format(step_dir), 'w') as fp:
-			fp.write(ansible_hosts)
-
-		with open("{}/deploy-configure.yml".format(step_dir), 'w') as fp:
-			fp.write(ansible_config)
-
-		# Copy the roles over from genesis for ansible
-		logger.debug('Copying: {}/ansible-roles -> {}/roles'.format(args.data, step_dir))
-		copy_tree("{}/ansible-roles".format(args.data), "{}/roles".format(step_dir))
-
-		# Copy over custom post provision stuff (hardcoded ATM)
-		if pp_data is not None:
-			logger.debug('Copying: {}/ansible-pfsense-provision -> {}/roles'.format(args.data, step_dir))
-			copy_tree("{}/ansible-pfsense-provision".format(args.data), "{}/roles".format(step_dir))
-
-		# Copy over included data with config, if it has any
-		if config.get('has_included_data', False):
-			extra_dir = os.path.dirname(os.path.realpath(args.config.name))
-
-			for data in config.get('included_copy_data', []):
-				src = '{}/{}'.format(extra_dir, data)
-				dst = '{}/{}'.format(step_dir, data)
-
-				logger.debug('Copying: {} -> {}'.format(src, dst))
-
-				if os.path.isdir(src):
-					copy_tree(src, dst)
-				else:
-					copyfile(src, dst)
+		try:
+			dispatcher.run_generate()
+		except Exception as e:
+			logger.critical('Fatal error when generating: {}'.format(e))
+			sys.exit(1)
 
 		if not args.dry_run:
-			# Run terraform
-
-			# Run custom provisioners
-
-			# Run ansible
-			pass
+			try:
+				dispatcher.run_execute()
+			except Exception as e:
+				logger.critical('Fatal error when executing: {}'.format(e))
+				sys.exit(1)
 
 		# Done
 		step_run_time = datetime.now() - step_start_time
