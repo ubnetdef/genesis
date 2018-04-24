@@ -17,7 +17,7 @@ class DeployFolder(BaseDeployer):
 		data['step_dir'] = step_dir
 
 	def execute(self, data):
-		return None
+		return []
 
 
 class CopyData(BaseDeployer):
@@ -36,4 +36,4 @@ class CopyData(BaseDeployer):
 				self._copy(src, dst)
 
 	def execute(self, data):
-		return None
+		return []

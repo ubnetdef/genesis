@@ -42,6 +42,6 @@ class PostProvisionDispatcher(BaseDeployer):
 	def execute(self, data):
 		cmds = []
 		for p in self.provisioners:
-			cmds.append(p.execute(data))
+			cmds += p.execute(data)
 
 		return cmds

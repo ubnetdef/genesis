@@ -22,7 +22,9 @@ class Ansible(BaseDeployer):
 		self._copy("{}/{}".format(self.args.data, self.ANSIBLE_ROLES), "{}/roles".format(data['step_dir']))
 
 	def execute(self, data):
-		return 'ansible-playbook -i {} {}'.format(self.ANSIBLE_INVENTORY, self.ANSIBLE_PLAYBOOK)
+		return [
+			['ansible-playbook', '-i', self.ANSIBLE_INVENTORY, self.ANSIBLE_PLAYBOOK]
+		]
 
 	def _generate_hosts(self):
 		groups = {}

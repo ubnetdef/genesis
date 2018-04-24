@@ -15,7 +15,9 @@ class pfsenseProvision(BaseDeployer):
 		self._copy("{}/{}".format(self.args.data, self.PFSENSE_ANSIBLE_PROVISION), "{}/roles".format(data['step_dir']))
 
 	def execute(self, data):
-		return 'ansible-playbook {}'.format(self.PFSENSE_PROVISION_FILE)
+		return [
+			['ansible-playbook', self.PFSENSE_PROVISION_FILE]
+		]
 
 	def _generate_yml(self, data):
 		out = []

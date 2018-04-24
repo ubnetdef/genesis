@@ -14,9 +14,9 @@ class Terraform(BaseDeployer):
 
 	def execute(self, data):
 		return [
-			'terraform init',
-			"terraform plan -out '{}'".format(self.TERRAFORM_PLAN),
-			"terraform apply '{}'".format(self.TERRAFORM_PLAN)
+			['terraform', 'init'],
+			['terraform', 'plan', '-out', self.TERRAFORM_PLAN],
+			['terraform', 'apply', self.TERRAFORM_PLAN]
 		]
 
 	def _generate_tf_config(self):

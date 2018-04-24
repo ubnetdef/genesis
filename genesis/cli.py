@@ -91,7 +91,7 @@ def main(logger, args):
 
 	for step, deploy_config in strategy.generate_steps():
 		step_start_time = datetime.now()
-		logger.debug('Deployment strategy run #{}'.format(step))
+		logger.info('Deployment strategy run #{}'.format(step))
 
 		dispatcher = DeployDispatcher(step, config, args, deploy_config)
 
