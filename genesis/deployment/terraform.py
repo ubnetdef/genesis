@@ -1,6 +1,7 @@
 from genesis.deployment import BaseDeployer
 
 class Terraform(BaseDeployer):
+	STEP = "terraform"
 	NAME = "Terraform"
 	DESC = "Deploys VM resources"
 

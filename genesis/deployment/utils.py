@@ -1,8 +1,10 @@
+import json
 import os
-import yaml
+import subprocess
 from genesis.deployment import BaseDeployer
 
 class DeployFolder(BaseDeployer):
+	STEP = "deploy-folder"
 	NAME = "DeployFolder"
 	DESC = "Meta deployer that handles creation of a deploy folder"
 
@@ -21,6 +23,7 @@ class DeployFolder(BaseDeployer):
 
 
 class CopyData(BaseDeployer):
+	STEP = "copy-data"
 	NAME = "CopyData"
 	DESC = "Meta deployer that handles copying of data from a config file"
 
@@ -34,6 +37,60 @@ class CopyData(BaseDeployer):
 				dst = '{}/{}'.format(data['step_dir'], copydata)
 
 				self._copy(src, dst)
+
+	def execute(self, data):
+		return []
+
+
+class AnsibleGalaxyRoleDeploy(BaseDeployer):
+	STEP = "ansible-galaxy-role-deploy"
+	NAME = "AnsibleGalaxyRoleDeploy"
+	DESC = "Meta deployer that handles installing ansible-galaxy roles"
+
+	def generate(self, data):
+		# Create the directory
+		roles_dir = "{}/global-roles".format(self.args.output)
+		if not os.path.exists(roles_dir):
+			self.logger.debug('Creating global ansible roles directory: {}'.format(roles_dir))
+			os.makedirs(roles_dir)
+
+		# Save the directory to the deployment data
+		data['roles_dir'] = roles_dir
+
+	def execute(self, data):
+		cmds = []
+
+		# Read the DB
+		ansible_galaxy_install_db = "{}/.{}".format(self.args.output, self.STEP)
+		installed = []
+		if os.path.isfile(ansible_galaxy_install_db):
+			with open(ansible_galaxy_install_db) as fp:
+				installed = json.load(fp)
+
+		# Generate the install commands
+		for role in self.config.get('ansible_galaxy_roles', []):
+			if role in installed:
+				continue
+
+			cmds.append(['ansible-galaxy', 'install', role])
+			installed.append(role)
+
+		# Save the DB
+		with open(ansible_galaxy_install_db, 'w') as fp:
+			fp.write(json.dumps(installed))
+
+		return cmds
+
+
+class SetupCLIEnviron(BaseDeployer):
+	STEP = "setup-cli-environ"
+	NAME = "SetupCLIEnviron"
+	DESC = "Sets up the CLI environ for deploys"
+
+	def generate(self, data):
+		data['cli_environ'] = dict(os.environ)
+		data['cli_environ']['ANSIBLE_NOCOWS'] = '1'
+		data['cli_environ']['ANSIBLE_ROLES_PATH'] = data['roles_dir']
 
 	def execute(self, data):
 		return []

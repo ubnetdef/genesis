@@ -1,7 +1,10 @@
+import os
+import subprocess
 import yaml
 from genesis.deployment import BaseDeployer
 
 class Ansible(BaseDeployer):
+	STEP = "ansible"
 	NAME = "Ansible"
 	DESC = "Post-deployment configuration of a VM"
 
@@ -18,8 +21,11 @@ class Ansible(BaseDeployer):
 		with open("{}/{}".format(data['step_dir'], self.ANSIBLE_PLAYBOOK), 'w') as fp:
 			fp.write(self._generate_deploy())
 
-		# Roles
-		self._copy("{}/{}".format(self.args.data, self.ANSIBLE_ROLES), "{}/roles".format(data['step_dir']))
+		# Copy global roles over
+		copy_ansible_flag = "{}/.{}-roles-copied".format(self.args.output, self.STEP)
+		if not os.path.isfile(copy_ansible_flag):
+			self._copy("{}/{}".format(self.args.data, self.ANSIBLE_ROLES), data['roles_dir'])
+			open(copy_ansible_flag, 'a').close()
 
 	def execute(self, data):
 		return [
@@ -91,14 +97,17 @@ class Ansible(BaseDeployer):
 			}
 
 			for role_name, role_config in host.get('roles', {}).items():
-				role_vars = self.config.get('role_variables', {}).get(role_name, {})
-
-				out_host['tasks'].append({
+				role_extra = self.config.get('role_variables', {}).get(role_name, {})
+				role_cfg = {
 					'include_role': {
 						'name': role_name
-					},
-					'vars': role_vars
-				})
+					}
+				}
+
+				# Merge in the extra
+				role_cfg.update(role_extra)
+
+				out_host['tasks'].append(role_cfg)
 
 			out.append(out_host)
 

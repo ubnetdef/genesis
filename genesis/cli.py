@@ -18,6 +18,11 @@ def cli_main(base_dir=None):
 	parser.add_argument('--data', help='Data directory for genesis. Defaults to the data folder in genesis.', required=output_arg_required)
 	parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure.', action='store_true', default=False)
 	parser.add_argument('--only-deploy', help='Only deploy certain hosts. This contains the host IDs.', nargs='+')
+
+	g = parser.add_mutually_exclusive_group()
+	g.add_argument('--only-steps', help='Run certain deployment steps.', nargs='+')
+	g.add_argument('--not-steps', help='Do not run these deployment steps.', nargs='+')
+
 	parser.add_argument('--start-team-number', help='Team number to start at', type=int, default=1)
 	parser.add_argument('--batch-deploys', help='Batch VM deploys', type=int, default=9999)
 	parser.add_argument('--debug', help='Enable debug mode', action='store_true', default=False)
@@ -50,6 +55,20 @@ def cli_main(base_dir=None):
 		args.only_deploy = args.only_deploy[0].split(',')
 
 		logger.debug('"--only-deploy" detected args passed with commas. Fixing.')
+
+	# Cleanup "--only-steps"
+	if args.only_steps is not None and \
+		len(args.only_steps) == 1 and ',' in args.only_steps[0]:
+		args.only_steps = args.only_steps[0].split(',')
+
+		logger.debug('"--only-steps" detected args passed with commas. Fixing.')
+
+	# Cleanup "--not-steps"
+	if args.not_steps is not None and \
+		len(args.not_steps) == 1 and ',' in args.not_steps[0]:
+		args.not_steps = args.not_steps[0].split(',')
+
+		logger.debug('"--not-steps" detected args passed with commas. Fixing.')
 
 	main(logger, args)
 

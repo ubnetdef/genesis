@@ -6,6 +6,7 @@ from distutils.dir_util import copy_tree
 from shutil import copyfile
 
 class BaseDeployer(object):
+	STEP = "unconfigured"
 	NAME = "Unconfigured"
 	DESC = "Unconfigured"
 

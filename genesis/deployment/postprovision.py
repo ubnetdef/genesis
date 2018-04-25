@@ -2,6 +2,7 @@ from genesis.deployment import BaseDeployer
 from genesis.deployment.custom import CUSTOM_POST_PROVISION_MAPPINGS
 
 class PostProvisionDispatcher(BaseDeployer):
+	STEP = "post-provision"
 	NAME = "PostProvisionDispatcher"
 	DESC = "Configures a VM when configuration during deployment is unavailable"
 
