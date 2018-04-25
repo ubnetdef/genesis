@@ -156,9 +156,15 @@ class Terraform(BaseDeployer):
 		out.append('\tclone {')
 		out.append('\t\ttemplate_uuid = "${{data.vsphere_virtual_machine.{}.id}}"'.format(self._id(host['template'])))
 
+		# Set the clone timeout to be 12 hours
+		out.append('\t\ttimeout = 720')
+
 		# Customize Section
 		if template['os'] in self.CAN_CUSTOMIZE_OS:
 			out.append('\t\tcustomize {')
+
+			# Set customization timeout to be 30 minutes
+			out.append('\t\t\ttimeout = 30')
 
 			## linux_options
 			if template['os'] in self.LINUX_OS:
