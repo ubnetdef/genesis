@@ -87,7 +87,7 @@ def main(logger, args):
 	strategy = DeployStrategy(args, config)
 
 	if args.dry_run:
-		logger.info('Dry run enabled. Will not be running terraform and ansible.')
+		logger.info('Dry run enabled. Will not be executing the deployment.')
 
 	for step, deploy_config in strategy.generate_steps():
 		step_start_time = datetime.now()

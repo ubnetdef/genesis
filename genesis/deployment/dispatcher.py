@@ -58,7 +58,7 @@ class DeployDispatcher(object):
 				self.logger.debug('Running CMD: {}'.format(cmd))
 
 				cmd_start_time = datetime.now()
-				retcode = subprocess.call(cmd, cwd=self.deploy_data['step_dir'], stdout=fp)
+				retcode = subprocess.call(cmd, cwd=self.deploy_data['step_dir'], env=os.environ, stdout=fp)
 				cmd_run_time = datetime.now() - cmd_start_time
 
 				self.logger.debug('CMD completed in {}s'.format(cmd_run_time.total_seconds()))
