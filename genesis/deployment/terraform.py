@@ -175,9 +175,9 @@ class Terraform(BaseDeployer):
 				out.append('\t\t\t\tdomain = "{}"'.format(host['domain']))
 				out.append('\t\t\t}')
 
-				# DNS (which needs to be 'globa' on linux)
+				# DNS (which needs to be 'global' on linux)
 				out.append('\t\t\tdns_server_list = [{}]'.format(', '.join(dns_server_list)))
-				out.append('\t\t\tdns_suffix_list = "{}"'.format(host['domain']))
+				out.append('\t\t\tdns_suffix_list = ["{}"]'.format(host['domain']))
 
 			## windows_options
 			if template['os'] in self.WINDOWS_OS:
