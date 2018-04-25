@@ -74,6 +74,9 @@ class Ansible(BaseDeployer):
 			else:
 				raise Exception('Unknown OS: {}'.format(tpl['os']))
 
+			for key, value in tpl.get('ansible_opts', {}).items():
+				out.append('{}="{}"'.format(key, value))
+
 			out.append('')
 
 		return '\n'.join(out)

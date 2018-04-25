@@ -40,6 +40,10 @@ class DeployDispatcher(object):
 			self.logger.debug('Output log folder ({}) does not exist. Creating.'.format(logfolder))
 			os.makedirs(logfolder)
 
+		# Set the ENV for the commands
+		cmdenv = os.environ
+		cmdenv['ANSIBLE_NOCOWS'] = 1
+
 		for step in DEPLOYMENT_STEPS:
 			self.logger.debug('Running .execute() for {}'.format(step.NAME))
 			cmds = self.deployers[step.NAME].execute(self.deploy_data)
@@ -58,7 +62,7 @@ class DeployDispatcher(object):
 				self.logger.debug('Running CMD: {}'.format(cmd))
 
 				cmd_start_time = datetime.now()
-				retcode = subprocess.call(cmd, cwd=self.deploy_data['step_dir'], env=os.environ, stdout=fp)
+				retcode = subprocess.call(cmd, cwd=self.deploy_data['step_dir'], env=cmdenv, stdout=fp)
 				cmd_run_time = datetime.now() - cmd_start_time
 
 				self.logger.debug('CMD completed in {}s'.format(cmd_run_time.total_seconds()))
