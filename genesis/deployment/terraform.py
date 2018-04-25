@@ -67,7 +67,7 @@ class Terraform(BaseDeployer):
 	def _gen_provider(self, user, passwd, server, unverified_ssl, alias=None):
 		out = [
 			'provider "vsphere" {',
-			'\tuser = "{}"'.format(user),
+			'\tuser = "{}"'.format(user.replace('\\', '\\\\')),
 			'\tpassword = "{}"'.format(passwd),
 			'\tvsphere_server = "{}"'.format(server),
 			'\tallow_unverified_ssl = {}'.format('true' if unverified_ssl else 'false')
@@ -131,6 +131,10 @@ class Terraform(BaseDeployer):
 			'\tguest_id = "${{data.vsphere_virtual_machine.{}.guest_id}}"'.format(self._id(host['template'])),
 			'\tscsi_type = "${{data.vsphere_virtual_machine.{}.scsi_type}}"'.format(self._id(host['template']))
 		]
+
+		# If the machine requires custom post provisioning, disable waiting for a network
+		if template['os'] in self.CUSTOM_POST_PROVISION_HOSTS:
+			out.append('\twait_for_guest_net_routable = false')
 
 		# Networks
 		for net in host['networks']:
