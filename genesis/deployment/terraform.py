@@ -184,6 +184,12 @@ class Terraform(BaseDeployer):
 				out.append('\t\t\twindows_options {')
 				out.append('\t\t\t\tcomputer_name = "{}"'.format(host['hostname']))
 				out.append('\t\t\t\torganization_name = "genesis"')
+
+				if 'terraform_windows' in host:
+					for k, v in host['terraform_windows'].items():
+
+						out.append('\t\t\t\t{} = "{}"'.format(k, v.replace('\\', '\\\\')))
+
 				out.append('\t\t\t}')
 
 			## network_interface
