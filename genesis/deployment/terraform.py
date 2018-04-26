@@ -184,11 +184,6 @@ class Terraform(BaseDeployer):
 				out.append('\t\t\twindows_options {')
 				out.append('\t\t\t\tcomputer_name = "{}"'.format(host['hostname']))
 				out.append('\t\t\t\torganization_name = "genesis"')
-
-				# DNS
-				out.append('\t\t\t\tdns_server_list = [{}]'.format(', '.join(dns_server_list)))
-				out.append('\t\t\t\tdns_domain = "{}"'.format(host['domain']))
-
 				out.append('\t\t\t}')
 
 			## network_interface
@@ -198,6 +193,12 @@ class Terraform(BaseDeployer):
 				out.append('\t\t\tnetwork_interface {')
 				out.append('\t\t\t\tipv4_address = "{}"'.format(ipaddr))
 				out.append('\t\t\t\tipv4_netmask = {}'.format(netmask))
+
+				# DNS for Windows
+				if template['os'] in self.WINDOWS_OS:
+					out.append('\t\t\t\tdns_server_list = [{}]'.format(', '.join(dns_server_list)))
+					out.append('\t\t\t\tdns_domain = "{}"'.format(host['domain']))
+
 				out.append('\t\t\t}')
 
 				if gateway is None or (gateway is not None and net.get('primary', False)):		
