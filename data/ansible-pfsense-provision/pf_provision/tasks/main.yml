@@ -16,6 +16,6 @@
     vm_shell_cwd: "/tmp"
   delegate_to: localhost
 
-- name: Wait 45s for pfSense to reboot
-  wait_for: timeout=45
+- name: Wait 90s for pfSense to reboot
+  wait_for: timeout=90
   delegate_to: localhost
