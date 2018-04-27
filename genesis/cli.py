@@ -24,6 +24,7 @@ def cli_main(base_dir=None):
 	g.add_argument('--not-steps', help='Do not run these deployment steps.', nargs='+')
 
 	parser.add_argument('--start-team-number', help='Team number to start at', type=int, default=1)
+	parser.add_argument('--disable-dependency', help='Disable dependency resolution', action='store_true', default=False)
 	parser.add_argument('--batch-deploys', help='Batch VM deploys', type=int, default=9999)
 	parser.add_argument('--debug', help='Enable debug mode', action='store_true', default=False)
 
