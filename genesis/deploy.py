@@ -27,7 +27,7 @@ class DeployStrategy(object):
 			for hid, node in self.nodes.items():
 				has_uncompleted_deps = any(x in self.nodes for x in node.deps)
 
-				if not has_uncompleted_deps and not self.args.disable_dependency:
+				if not has_uncompleted_deps or self.args.disable_dependency:
 					next_strategy.append(hid)
 
 			# If we have a loop, next_stretegy will be empty
