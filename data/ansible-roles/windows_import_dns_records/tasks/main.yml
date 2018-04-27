@@ -1,0 +1,13 @@
+---
+- name: Copy over DNS Record CSV
+  win_copy:
+    src: "{{ dns_records_csv }}"
+    dest: C:\DNSRecords.csv
+
+- name: Run DNS Records Script
+  script: files/Add-DnsRecords.ps1 C:\DNSRecords.csv {{ dns_team_number }} -CreatePtrs
+
+- name: Cleanup DNS Record CSV
+  win_file:
+    path: C:\DNSRecords.csv
+    state: absent
