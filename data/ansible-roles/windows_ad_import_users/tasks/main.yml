@@ -1,0 +1,12 @@
+---
+- name: Include the user YAML
+  include_vars: "{{ windows_ad_accounts }}"
+
+- name: Add Users
+  win_domain_user:
+    name: "{{ item.username }}"
+    password: "{{ item.password }}"
+    state: present
+    groups: "{{ item.groups | default(omit)"
+    upn: "{{ item.username }}@{{ windows_ad_domain }}"
+  with_items: "{{ accounts }}"
