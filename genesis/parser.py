@@ -28,15 +28,14 @@ class Parser(object):
 		self.data['hosts'] = hosts
 
 		num_iterations = 0
-		for x in range(self.args.start_team_number, self.args.teams+1):
+		for x in range(self.args.start_team_number, self.args.start_team_number + self.args.teams):
 			replace_tpl = tpl['variables'].copy()
 
 			# Default variables
 			replace_tpl['team'] = '{team}'
-			replace_tpl['team_pad'] = '0{team}' if x < 10 else '{team}'
 
 			# Initial replacement
-			replace_tpl = utils.recursive_replace(replace_tpl, {'team': x}, num_iterations)
+			replace_tpl = utils.recursive_replace(replace_tpl, {'team': x, 'team_pad': '{:02d}'.format(x)}, num_iterations)
 
 			# Interactive replacements
 			## Calculations
