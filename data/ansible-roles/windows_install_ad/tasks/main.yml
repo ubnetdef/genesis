@@ -1,3 +1,6 @@
 ---
-- name: Install AD and Promote to Domain Controller
-  script: files/Install-AD.ps1 "{{ domain }}" "{{ netbiosname }}" "{{ adbackuppass }}"
+- name: debug
+  debug:
+    msg: "domain: {{ domain }} // bios: {{ netbiosname }} // backup: {{ adbackuppass }}"
+#- name: Install AD and Promote to Domain Controller
+#  script: files/Install-AD.ps1 "{{ domain }}" "{{ netbiosname }}" "{{ adbackuppass }}"

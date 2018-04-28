@@ -57,9 +57,9 @@ class Ansible(BaseDeployer):
 					primary_ip, _ = net['ip'].split('/', 2)
 
 			inline_cfg = []
-			for role_name, role_config in host.get('roles', {}).items():
-				if role_config is not None:
-					for key, val in role_config.items():
+			for role in host.get('roles', []):
+				if 'vars' in role:
+					for key, val in role['vars'].items():
 						inline_cfg.append('{}="{}"'.format(key, val))
 
 			groups[host['id']]['hosts'].append(primary_ip)
@@ -117,16 +117,18 @@ class Ansible(BaseDeployer):
 				'tasks': [],
 			}
 
-			for role_name, role_config in host.get('roles', {}).items():
-				role_extra = self.config.get('role_variables', {}).get(role_name, {})
+			for role in host.get('roles', []):
+				role_extra = self.config.get('role_variables', {}).get(role['name'], {})
 				role_cfg = {
 					'include_role': {
-						'name': role_name
+						'name': role['name']
 					}
 				}
 
 				# Merge in the extra
-				role_cfg.update(role_extra)
+				role_cfg.update({
+					'vars': role_extra
+				})
 
 				out_host['tasks'].append(role_cfg)
 

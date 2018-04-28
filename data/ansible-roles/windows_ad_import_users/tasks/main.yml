@@ -7,6 +7,6 @@
     name: "{{ item.username }}"
     password: "{{ item.password }}"
     state: present
-    groups: "{{ item.groups | default(omit)"
+    groups: "{{ item.groups | default(omit) }}"
     upn: "{{ item.username }}@{{ windows_ad_domain }}"
   with_items: "{{ accounts }}"
