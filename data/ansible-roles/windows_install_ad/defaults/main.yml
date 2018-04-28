@@ -1,4 +1,4 @@
 ---
-domain: "example.com"
-netbiosname: "EXAMPLE"
-adbackuppass: "Changeme1!"
+domain_name: "example.com"
+netbios_name: "EXAMPLE"
+ad_backuppass: "Changeme1!"
