@@ -11,7 +11,7 @@ $revzones = @()
 $TeamNumberPadded = "{0:D2}" -f $TeamNumber
 
 Import-Csv $FileName | % {
-    $ip = $_.Address.replace("X", $TeamNumber)
+    $ip = $_.Address.replace("{TEAM}", $TeamNumber)
     $RevZoneName = $ip.split(".")[2] + "." + $ip.split(".")[1] + "." + $ip.split(".")[0] + ".in-addr.arpa"
 
     # If the user wants a reverse zone, create it on the first loop only
