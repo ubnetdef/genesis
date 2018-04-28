@@ -130,9 +130,7 @@ class Ansible(BaseDeployer):
 				}
 
 				# Merge in the extra
-				role_cfg.update({
-					'vars': role_extra
-				})
+				role_cfg.update(role_extra)
 
 				# Merge in host overrides
 				if 'vars' in role:
