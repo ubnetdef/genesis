@@ -33,6 +33,7 @@ class Parser(object):
 
 			# Default variables
 			replace_tpl['team'] = '{team}'
+			replace_tpl['team_pad'] = '0{team}' if x < 10 else '{team}'
 
 			# Initial replacement
 			replace_tpl = utils.recursive_replace(replace_tpl, {'team': x, 'team_pad': '{:02d}'.format(x)}, num_iterations)
