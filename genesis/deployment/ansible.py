@@ -134,9 +134,7 @@ class Ansible(BaseDeployer):
 
 				# Merge in host overrides
 				if 'vars' in role:
-					role_cfg.update({
-						'vars': role['vars']
-					})
+					role_cfg['vars'].update(role['vars'])
 
 				out_host['tasks'].append(role_cfg)
 
