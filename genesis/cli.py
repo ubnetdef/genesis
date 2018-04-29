@@ -78,7 +78,11 @@ def main(logger, args):
 	main_start_time = datetime.now()
 	logger.info('Genesis started on: {}'.format(main_start_time))
 
-	# Ensure the output folder exists, if not create it
+	# Ensure the output folder does not exist (or is not empty), otherwise bad thingsTM will happen
+	if os.path.exists(args.output) and len(os.listdir(args.output)) > 0:
+		logger.critical('Output folder ({}) already exists. Please choose another folder name'.format(args.output))
+		sys.exit(1)
+
 	if not os.path.exists(args.output):
 		logger.debug('Output folder ({}) does not exist. Creating.'.format(args.output))
 		os.makedirs(args.output)

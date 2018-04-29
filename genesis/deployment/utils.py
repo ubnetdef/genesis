@@ -11,9 +11,10 @@ class DeployFolder(BaseDeployer):
 	def generate(self, data):
 		# Create step_dir
 		step_dir = "{}/step{}".format(self.args.output, self.step)
-		if not os.path.exists(step_dir):
-			self.logger.debug('Creating step directory: {}'.format(step_dir))
-			os.makedirs(step_dir)
+
+		# Create the directory
+		self.logger.debug('Creating step directory: {}'.format(step_dir))
+		os.makedirs(step_dir)
 
 		# Save this to the deployment data
 		data['step_dir'] = step_dir
