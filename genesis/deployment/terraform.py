@@ -148,7 +148,12 @@ class Terraform(BaseDeployer):
 		for disk in host['disks']:
 			out.append('\tdisk {')
 			out.append('\t\tlabel = "{}"'.format(disk['label']))
-			out.append('\t\tsize = {}'.format(disk['size']))
+
+			if 'size' in disk:
+				out.append('\t\tsize = {}'.format(disk['size']))
+			else:
+				out.append('\t\tsize = "${{data.vsphere_virtual_machine.{}.disks.0.size}}"'.format(self._id(host['template'])))
+
 			out.append('\t\tthin_provisioned = "${{data.vsphere_virtual_machine.{}.disks.0.thin_provisioned}}"'.format(self._id(host['template'])))
 			out.append('\t}')
 
@@ -156,8 +161,8 @@ class Terraform(BaseDeployer):
 		out.append('\tclone {')
 		out.append('\t\ttemplate_uuid = "${{data.vsphere_virtual_machine.{}.id}}"'.format(self._id(host['template'])))
 
-		# Set the clone timeout to be 12 hours
-		out.append('\t\ttimeout = 720')
+		# Set the clone timeout to be 1 hour
+		out.append('\t\ttimeout = 60')
 
 		# Customize Section
 		if template['os'] in self.CAN_CUSTOMIZE_OS:
@@ -165,8 +170,8 @@ class Terraform(BaseDeployer):
 
 			out.append('\t\tcustomize {')
 
-			# Set customization timeout to be 30 minutes
-			out.append('\t\t\ttimeout = 30')
+			# Set customization timeout to be 45 minutes
+			out.append('\t\t\ttimeout = 45')
 
 			## linux_options
 			if template['os'] in self.LINUX_OS:
