@@ -7,25 +7,32 @@ from genesis import __description__
 from genesis.deploy import DeployStrategy
 from genesis.deployment.dispatcher import DeployDispatcher
 from genesis.parser import YamlParser
+from shutil import rmtree
 
 def cli_main(base_dir=None):
 	parser = argparse.ArgumentParser(description=__description__)
 
 	output_arg_required = base_dir is None
+
+	# Required commands
 	parser.add_argument('--config', help='Competition YAML file to deploy from', type=argparse.FileType('r'), required=True)
 	parser.add_argument('--teams', help='Amount of teams to deploy the competition for', type=int, required=True)
-	parser.add_argument('--output', help='Output directory for genesis. Defaults to the deploy folder in genesis.', required=output_arg_required)
-	parser.add_argument('--data', help='Data directory for genesis. Defaults to the data folder in genesis.', required=output_arg_required)
-	parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure.', action='store_true', default=False)
-	parser.add_argument('--only-deploy', help='Only deploy certain hosts. This contains the host IDs.', nargs='+')
+	parser.add_argument('--output', help='Output folder for genesis. Defaults to the deploy folder in genesis', required=output_arg_required)
+	parser.add_argument('--data', help='Data folder for genesis. Defaults to the data folder in genesis', required=output_arg_required)
 
+	# Limit commands
 	g = parser.add_mutually_exclusive_group()
 	g.add_argument('--only-steps', help='Run certain deployment steps.', nargs='+')
 	g.add_argument('--not-steps', help='Do not run these deployment steps.', nargs='+')
 
+	parser.add_argument('--only-deploy', help='Only deploy certain hosts. This contains the host IDs.', nargs='+')
 	parser.add_argument('--start-team-number', help='Team number to start at', type=int, default=1)
+
+	# Flags
+	parser.add_argument('--remove-output-folder', help='Automatically remove output folder, if it exists', action='store_true', default=False)
 	parser.add_argument('--disable-dependency', help='Disable dependency resolution', action='store_true', default=False)
-	parser.add_argument('--batch-deploys', help='Batch VM deploys', type=int, default=9999)
+	parser.add_argument('--batch-deploys', help='Number to batch VM deploys to per step', type=int, default=9999)
+	parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure.', action='store_true', default=False)
 	parser.add_argument('--debug', help='Enable debug mode', action='store_true', default=False)
 
 	args = parser.parse_args()
@@ -71,6 +78,10 @@ def cli_main(base_dir=None):
 
 		logger.debug('"--not-steps" detected args passed with commas. Fixing.')
 
+	# Expand paths
+	args.output = os.path.expanduser(args.output)
+	args.data = os.path.expanduser(args.data)
+
 	main(logger, args)
 
 def main(logger, args):
@@ -80,8 +91,12 @@ def main(logger, args):
 
 	# Ensure the output folder does not exist (or is not empty), otherwise bad thingsTM will happen
 	if os.path.exists(args.output) and len(os.listdir(args.output)) > 0:
-		logger.critical('Output folder ({}) already exists. Please choose another folder name'.format(args.output))
-		sys.exit(1)
+		if not args.remove_output_folder:
+			logger.critical('Output folder ({}) already exists. Please choose another folder name'.format(args.output))
+			sys.exit(1)
+
+		# Remove the folder
+		rmtree(args.output)
 
 	if not os.path.exists(args.output):
 		logger.debug('Output folder ({}) does not exist. Creating.'.format(args.output))
