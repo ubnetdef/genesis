@@ -7,13 +7,12 @@ from genesis.deployment.ansible import Ansible
 from genesis.deployment.postprovision import PostProvisionDispatcher
 from genesis.deployment.terraform import Terraform
 from genesis.deployment.utils import DeployFolder, CopyData, SetupCLIEnviron, AnsibleGalaxyRoleDeploy
-from genesis.deployment.vmware import VMwareNetworkFixer
 
 class DeployDispatcher(object):
     # Deployment objects, must be in order
     DEPLOYMENT_STEPS = [
         AnsibleGalaxyRoleDeploy, SetupCLIEnviron, DeployFolder,
-        Terraform, VMwareNetworkFixer, PostProvisionDispatcher, Ansible, CopyData
+        Terraform, PostProvisionDispatcher, Ansible, CopyData
     ]
 
     # Must be object.STEP, as we don't want more of the same object
