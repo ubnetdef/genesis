@@ -1,0 +1,92 @@
+name: Example Configuration
+description: |
+  Example configuration example
+
+# Does this configuration include data?
+has_included_data: false
+included_copy_data: # If so, which files/directories (relative to this directory) to copy
+  - data
+  - roles
+
+# Team Template. Predefined variables are "team" and "team_pad" (0-padded)
+# Anything else must be manually defined (as a value, or as a list)
+teams_template:
+  name: Team {team}
+  variables:
+    example-one: "This is a variable"
+    example-two: "This is a variable that has a variable: {team}"
+    example-three: "!calc {team} + 100"
+    example-four:
+      # This is a list example
+      - list-value-one
+      - list-value-two
+      - list-value-one
+      - list-value-two
+
+## !!!
+## NOTE: Everything below will support variables from teams_template
+## !!!
+
+# Virtualization platform settings
+platforms:
+  vmware:
+    type: vmware
+    host: vcenter.local
+    user: genesis-deploy@vsphere.local
+    pass: super-secret-password
+    allow_unverified_ssl: true
+
+# Base templates that hosts will be cloned/launched from (before customizing)
+# The "virt_platform" must map to a platform above. The template must also
+# be located on that platform
+templates:
+  - id: ubuntu
+    virt_platform: vmware
+    os: ubuntu
+    template: Templates/Genesis/Ubuntu
+    username: admin
+    password: changeme
+
+# Host defaults. These get merged into each individual host below
+# If needed, each individual hosts can override these settings
+hosts_defaults:
+  domain: "example.com"
+  datacenter: MY-DATACENER
+  datastore: MY-DATASTORE
+  resource_pool: MY-CLUSTER/Resources
+  folder: "Example/Genesis"
+  dns-servers:
+    - 192.168.1.1
+
+# The hosts for every team. This will be duplicated for
+# however many teams you plan on deploying
+hosts:
+  - id: web
+    name: WebServer
+    template: ubuntu
+    hostname: web
+    cpu: 1
+    memory: 1024
+    disks:
+      - label: disk0
+        size: 20
+    networks:
+      - adapter: example-network
+        ip: 192.168.{team}.2/24
+        gateway: 192.168.{team}.1
+    roles:
+      - name: ansible_role
+      - name: someuser.ansible_galaxy_role
+      - name: some_role_with_inline_vars
+        vars:
+          inline_var: "this-supports-variables-too: {team}"
+
+# The sections below _DO NOT_ support variables
+ansible_galaxy_roles:
+  - someuser.ansible_galaxy_role
+
+# Ansible role variables
+role_variables:
+  ansible_role:
+    vars:
+      another_variable: value
