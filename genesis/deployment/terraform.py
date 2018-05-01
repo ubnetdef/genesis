@@ -12,8 +12,11 @@ class Terraform(BaseDeployer):
     CAN_CUSTOMIZE_OS = ['ubuntu', 'centos', 'windows']
 
     SUPPORTED_PLATFORMS = ['vmware']
+    #pylint: disable=anomalous-backslash-in-string
     REGEX_IP_CIDR = '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'\
         '\/(?:[0-9]|[1-2][0-9]|3[0-2])$'
+
+    #pylint: disable=anomalous-backslash-in-string
     REGEX_IP = '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
 
     SCHEMA = {

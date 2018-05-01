@@ -35,7 +35,7 @@ def calculator_eval(expr):
     if not any(char in whitelist or char.isdigit() for char in expr):
         return 0
 
-    return eval(expr)
+    return eval(expr) #pylint: disable=eval-used
 
 def fail(e, debug):
     if debug:

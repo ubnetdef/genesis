@@ -1,6 +1,5 @@
 import json
 import os
-import subprocess
 from genesis.deployment import BaseDeployer
 
 

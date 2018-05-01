@@ -18,7 +18,7 @@ class PostProvisionDispatcher(BaseDeployer):
         templates = [x for x in self.deploy.templates.values() if x['os'] in self.CUSTOM_POST_PROVISION_HOSTS]
 
         if not templates:
-            return None
+            return
 
         # Grab all the hosts that will require custom workflows
         for template in templates:

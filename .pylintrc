@@ -3,3 +3,6 @@ max-line-length=120
 
 [SIMILARITIES]
 min-similarity-lines=7
+
+[MESSAGES CONTROL]
+disable=duplicate-code

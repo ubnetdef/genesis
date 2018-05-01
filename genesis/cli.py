@@ -29,10 +29,10 @@ def cli_main(base_dir=None):
 
     # Limit commands
     g = parser.add_mutually_exclusive_group()
-    g.add_argument('--only-steps', help='Run certain deployment steps.', nargs='+')
-    g.add_argument('--not-steps', help='Do not run these deployment steps.', nargs='+')
+    g.add_argument('--only-steps', help='Run certain deployment steps', nargs='+')
+    g.add_argument('--not-steps', help='Do not run these deployment steps', nargs='+')
 
-    parser.add_argument('--only-deploy', help='Only deploy certain hosts. This contains the host IDs.', nargs='+')
+    parser.add_argument('--only-deploy', help='Only deploy certain hosts. This contains the host IDs', nargs='+')
     parser.add_argument('--start-team-number', help='Team number to start at', type=int, default=1)
 
     # Flags
@@ -41,7 +41,7 @@ def cli_main(base_dir=None):
     parser.add_argument('--disable-dependency', help='Disable dependency resolution',
                         action='store_true', default=False)
     parser.add_argument('--batch-deploys', help='Number to batch VM deploys to per step', type=int, default=9999)
-    parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure.',
+    parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure',
                         action='store_true', default=False)
     parser.add_argument('--debug', help='Enable debug mode', action='store_true', default=False)
 
