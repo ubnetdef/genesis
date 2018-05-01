@@ -14,7 +14,7 @@ class DeployFolder(BaseDeployer):
         step_dir = "{}/step{}".format(self.args.output, self.step)
 
         # Create the directory
-        self.logger.debug('Creating step directory: {}'.format(step_dir))
+        self.logger.debug('Creating step directory: %s', step_dir)
         os.makedirs(step_dir)
 
         # Save this to the deployment data
@@ -78,7 +78,7 @@ class AnsibleGalaxyRoleDeploy(BaseDeployer):
         # Create the directory
         roles_dir = "{}/global-roles".format(self.args.output)
         if not os.path.exists(roles_dir):
-            self.logger.debug('Creating global ansible roles directory: {}'.format(roles_dir))
+            self.logger.debug('Creating global ansible roles directory: %s', roles_dir)
             os.makedirs(roles_dir)
 
         # Save the directory to the deployment data

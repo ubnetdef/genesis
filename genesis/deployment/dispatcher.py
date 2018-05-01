@@ -52,8 +52,8 @@ class DeployDispatcher(object):
             self.DEPLOYMENT_STEPS.remove(step)
 
         if remove:
-            self.logger.debug('Removing the following deployment steps: {}'.format([x.NAME for x in remove]))
-            self.logger.debug('Deployment steps remaining: {}'.format([x.NAME for x in self.DEPLOYMENT_STEPS]))
+            self.logger.debug('Removing the following deployment steps: %s', [x.NAME for x in remove])
+            self.logger.debug('Deployment steps remaining: %s', [x.NAME for x in self.DEPLOYMENT_STEPS])
 
     def run_validate(self):
         errors = []
@@ -67,34 +67,34 @@ class DeployDispatcher(object):
                 })
 
         if errors:
-            self.logger.critical('{} deployment steps failed to pass validation'.format(len(errors)))
+            self.logger.critical('%d deployment steps failed to pass validation', len(errors))
 
             for error in errors:
-                self.logger.critical('{validator}: {errors}'.format(**error))
+                self.logger.critical('%s: %s', error['validator'], error['errors'])
 
-            raise Exception('{} deployment steps failed to pass validation'.format(len(errors)))
+            raise Exception('%d deployment steps failed to pass validation', len(errors))
 
     def run_generate(self):
-        for stepnum, step in enumerate(self.DEPLOYMENT_STEPS):
-            self.logger.debug('Running .generate() for {}'.format(step.NAME))
+        for _, step in enumerate(self.DEPLOYMENT_STEPS):
+            self.logger.debug('Running .generate() for %s', step.NAME)
             self.deployers[step.NAME].generate(self.deploy_data)
 
     def run_execute(self):
         # Ensure log directory exists
         logfolder = "{}/{}".format(self.args.output, self.EXECUTE_LOGS_DIR)
         if not os.path.exists(logfolder):
-            self.logger.debug('Output log folder ({}) does not exist. Creating.'.format(logfolder))
+            self.logger.debug('Output log folder (%s) does not exist. Creating.', logfolder)
             os.makedirs(logfolder)
 
         # Set the ENV for the commands
         cmdenv = self.deploy_data['cli_environ']
 
         for stepnum, step in enumerate(self.DEPLOYMENT_STEPS):
-            self.logger.debug('Running .execute() for {}'.format(step.NAME))
+            self.logger.debug('Running .execute() for %s', step.NAME)
             cmds = self.deployers[step.NAME].execute(self.deploy_data)
 
             if not isinstance(cmds, list):
-                raise Exception('Deployer {} did not return proper data for execute'.format(step.NAME))
+                raise Exception('Deployer %s did not return proper data for execute', step.NAME)
 
             if cmds is None or not cmds:
                 continue
@@ -104,15 +104,15 @@ class DeployDispatcher(object):
             fp = open("{}/{}".format(logfolder, logfile), 'w')
 
             for cmd in cmds:
-                self.logger.debug('Running CMD: {}'.format(cmd))
+                self.logger.debug('Running CMD: %s', cmd)
 
                 cmd_start_time = datetime.now()
                 retcode = subprocess.call(cmd, cwd=self.deploy_data['step_dir'], env=cmdenv, stdout=fp)
                 cmd_run_time = datetime.now() - cmd_start_time
 
-                self.logger.debug('CMD completed in {}s'.format(cmd_run_time.total_seconds()))
+                self.logger.debug('CMD completed in %fs', cmd_run_time.total_seconds())
 
                 if retcode != 0:
-                    self.logger.critical('The following CMD returned a non-zero exit code ({})'.format(retcode))
+                    self.logger.critical('The following CMD returned a non-zero exit code (%d)', retcode)
                     self.logger.critical(cmd)
                     sys.exit(1)

@@ -31,7 +31,7 @@ class PostProvisionDispatcher(BaseDeployer):
 
             # Run the workflow
             if hosts:
-                self.logger.debug('Calling post provisioner for {}'.format(tid))
+                self.logger.debug('Calling post provisioner for %s', tid)
 
                 # Create + store the provisioner
                 p = CUSTOM_POST_PROVISION_MAPPINGS[tid](self.step, self.config, self.args, self.deploy)

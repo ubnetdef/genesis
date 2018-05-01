@@ -26,8 +26,8 @@ def recursive_replace(node, replace_dict, num_iterations):
             res = res.replace("{{{}}}".format(k), str(value))
 
         return res
-    else:
-        return node
+
+    return node
 
 
 def calculator_eval(expr):

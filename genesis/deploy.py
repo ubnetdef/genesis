@@ -51,14 +51,13 @@ class DeployStrategy(object):
             # Build the team config that need to be deployed
             teams = []
             vms_deployed_in_step = 0
-            step_chunked = False
 
             for team in self.config['teams']:
                 if vms_deployed_in_step >= self.args.batch_deploys:
-                    self.logger.debug('Deployed more than {} VMs in step #{} ({}). Chunking.'.format(self.args.batch_deploys,
-                                                                                                     step, vms_deployed_in_step))
-                    self.logger.debug('Chunking steps = {}. Strategy step = {}'.format(chunking_additional_steps, step))
-                    step_chunked = True
+                    self.logger.debug('Deployed more than %s VMs in step #%d (%s). Chunking.',
+                                      self.args.batch_deploys, step, vms_deployed_in_step)
+                    self.logger.debug('Chunking steps = %d. Strategy step = %d',
+                                      chunking_additional_steps, step)
 
                     yield chunking_additional_steps + step, teams
 

@@ -1,6 +1,6 @@
-import genesis.utils as utils
-import yaml
 from abc import abstractmethod
+import yaml
+import genesis.utils as utils
 
 
 class Parser(object):

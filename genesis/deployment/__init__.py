@@ -2,9 +2,9 @@ import hashlib
 import logging
 import os
 from abc import abstractmethod
-from cerberus import Validator
 from distutils.dir_util import copy_tree
 from shutil import copyfile
+from cerberus import Validator
 
 
 class BaseDeployer(object):
@@ -57,7 +57,7 @@ class BaseDeployer(object):
         return hashlib.md5(name.encode('utf-8')).hexdigest()
 
     def _copy(self, src, dst):
-        self.logger.debug('Copying {} -> {}'.format(src, dst))
+        self.logger.debug('Copying %s -> %s', src, dst)
 
         if os.path.isdir(src):
             copy_tree(src, dst)
