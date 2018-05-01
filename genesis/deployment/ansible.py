@@ -12,6 +12,62 @@ class Ansible(BaseDeployer):
 	ANSIBLE_PLAYBOOK = '99-deploy-configure.yml'
 	ANSIBLE_ROLES = 'ansible-roles'
 
+	SCHEMA = {
+		'templates': {
+			'type': 'list',
+			'schema': {
+				'type': 'dict',
+				'schema': {
+					'os': {
+						'type': 'string',
+						'allowed': BaseDeployer.ALL_OS,
+					},
+					'username': {
+						'type': 'string',
+					},
+					'password': {
+						'type': 'string',
+					},
+					'ansible_opts': {
+						'required': False,
+						'type': 'dict',
+					},
+				},
+			},
+		},
+		'hosts': {
+			'type': 'list',
+			'schema': {
+				'type': 'dict',
+				'schema': {
+					'roles': {
+						'required': False,
+						'type': 'list',
+						'schema': {
+							'type': 'dict',
+							'schema': {
+								'name': {
+									'type': 'string',
+								},
+								'vars': {
+									'required': False,
+									'type': 'dict',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		'role_variables': {
+			'required': False,
+			'type': 'dict',
+			'valueschema': {
+				'type': 'dict',
+			},
+		},
+	}
+
 	def generate(self, data):
 		# Inventory
 		with open("{}/{}".format(data['step_dir'], self.ANSIBLE_INVENTORY), 'w') as fp:

@@ -54,6 +54,25 @@ class DeployDispatcher(object):
 			self.logger.debug('Removing the following deployment steps: {}'.format([x.NAME for x in remove]))
 			self.logger.debug('Deployment steps remaining: {}'.format([x.NAME for x in self.DEPLOYMENT_STEPS]))
 
+	def run_validate(self):
+		errors = []
+
+		for step in self.DEPLOYMENT_STEPS:
+			valid, validator_errors = self.deployers[step.NAME].validate()
+			if not valid:
+				errors.append({
+					'validator': step.NAME,
+					'errors': validator_errors
+				})
+
+		if len(errors) > 0:
+			self.logger.critical('{} deployment steps failed to pass validation'.format(len(errors)))
+
+			for error in errors:
+				self.logger.critical('{validator}: {errors}'.format(**error))
+
+			raise Exception('{} deployment steps failed to pass validation'.format(len(errors)))
+
 	def run_generate(self):
 		for stepnum, step in enumerate(self.DEPLOYMENT_STEPS):
 			self.logger.debug('Running .generate() for {}'.format(step.NAME))

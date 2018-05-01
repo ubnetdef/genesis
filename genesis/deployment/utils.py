@@ -28,6 +28,21 @@ class CopyData(BaseDeployer):
 	NAME = "CopyData"
 	DESC = "Meta deployer that handles copying of data from a config file"
 
+	SCHEMA = {
+		'has_included_data': {
+			'required': False,
+			'type': 'boolean',
+		},
+		'included_copy_data': {
+			'required': False,
+			'dependencies': ['has_included_data'],
+			'type': 'list',
+			'schema': {
+				'type': 'string',
+			},
+		},
+	}
+
 	def generate(self, data):
 		# Copy any included data
 		if self.config.get('has_included_data', False):
@@ -47,6 +62,16 @@ class AnsibleGalaxyRoleDeploy(BaseDeployer):
 	STEP = "ansible-galaxy-role-deploy"
 	NAME = "AnsibleGalaxyRoleDeploy"
 	DESC = "Meta deployer that handles installing ansible-galaxy roles"
+
+	SCHEMA = {
+		'ansible_galaxy_roles': {
+			'required': False,
+			'type': 'list',
+			'schema': {
+				'type': 'string',
+			},
+		},
+	}
 
 	def generate(self, data):
 		# Create the directory

@@ -8,6 +8,149 @@ class Terraform(BaseDeployer):
 	TERRAFORM_FILE = '01-provision.tf'
 	TERRAFORM_PLAN = '.tfplan'
 
+	CAN_CUSTOMIZE_OS = ['ubuntu', 'centos', 'windows']
+
+	REGEX_IP_CIDR = '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[1-2][0-9]|3[0-2])$'
+	REGEX_IP = '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+
+	SCHEMA = {
+		'platforms': {
+			'type': 'dict',
+			'valueschema': {
+				'type': 'dict',
+				'schema': {
+					'type': {
+						'type': 'string',
+					},
+					'host': {
+						'type': 'string',
+					},
+					'user': {
+						'type': 'string',
+					},
+					'pass': {
+						'type': 'string',
+					},
+					'allow_unverified_ssl': {
+						'required': False,
+						'type': 'boolean',
+					},
+				},
+			},
+		},
+		'templates': {
+			'type': 'list',
+			'schema': {
+				'type': 'dict',
+				'schema': {
+					'virt_platform': {
+						'type': 'string',
+					},
+					'os': {
+						'type': 'string',
+						'allowed': BaseDeployer.ALL_OS,
+					},
+					'template': {
+						'type': 'string',
+					},
+				},
+			},
+		},
+		'hosts': {
+			'type': 'list',
+			'schema': {
+				'type': 'dict',
+				'schema': {
+					'id': {
+						'type': 'string',
+					},
+					'name': {
+						'type': 'string',
+					},
+					'domain': {
+						'type': 'string',
+					},
+					'datacenter': {
+						'type': 'string',
+					},
+					'datastore': {
+						'type': 'string',
+					},
+					'resource_pool': {
+						'type': 'string',
+					},
+					'folder': {
+						'type': 'string',
+					},
+					'template': {
+						'type': 'string',
+					},
+					'cpu': {
+						'type': 'integer',
+						'min': 1,
+					},
+					'memory': {
+						'type': 'integer',
+						'min': 128,
+					},
+					'disks': {
+						'type': 'list',
+						'schema': {
+							'type': 'dict',
+							'schema': {
+								'label': {
+									'type': 'string',
+								},
+								'size': {
+									'required': False,
+									'type': 'integer',
+									'min': 1,
+								}
+							}
+						}
+					},
+					'networks': {
+						'type': 'list',
+						'schema': {
+							'type': 'dict',
+							'schema': {
+								'adapter': {
+									'type': 'string',
+								},
+								'ip': {
+									'type': 'string',
+									'regex': REGEX_IP_CIDR
+								},
+								'gateway': {
+									'type': 'string',
+									'regex': REGEX_IP,
+								},
+								'primary': {
+									'required': False,
+									'type': 'boolean',
+								},
+							},
+						},
+					},
+					'dns-servers': {
+						'type': 'list',
+						'schema': {
+							'type': 'string',
+							'regex': REGEX_IP,
+						},
+					},
+					'dependency': {
+						'required': False,
+						'type': 'list',
+						'schema': {
+							'type': 'string'
+						},
+					},
+				},
+			},
+		},
+	}
+
 	def generate(self, data):
 		# Write the terraform config
 		with open("{}/{}".format(data['step_dir'], self.TERRAFORM_FILE), 'w') as fp:

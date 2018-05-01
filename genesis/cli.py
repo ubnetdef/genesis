@@ -96,10 +96,11 @@ def main(logger, args):
 			sys.exit(1)
 
 		# Remove the folder
+		logger.info('Removing already existing output folder - {}'.format(args.output))
 		rmtree(args.output)
 
 	if not os.path.exists(args.output):
-		logger.debug('Output folder ({}) does not exist. Creating.'.format(args.output))
+		logger.debug('Creating output folder - {}'.format(args.output))
 		os.makedirs(args.output)
 
 	if not os.access(args.output, os.W_OK):
@@ -114,11 +115,11 @@ def main(logger, args):
 		sys.exit(1)
 
 	# Print out some info about the config
-	logger.info('Competition Config: {}'.format(config['name']))
-	logger.info(config['description'])
+	logger.info('Competition Config: {}'.format(config.get('name', 'No Name Provided')))
+	logger.info(config.get('description', 'N/A'))
 
 	# Deal with max teams
-	if 'max_teams' in config and args.teams > config['max_teams']:
+	if 'max_teams' in config and args.teams > int(config['max_teams']):
 		logger.critical('Config only allows a max of {} teams to be created'.format(config['max_teams']))
 		sys.exit(1)
 
@@ -133,6 +134,12 @@ def main(logger, args):
 		logger.info('Deployment strategy run #{}'.format(step))
 
 		dispatcher = DeployDispatcher(step, config, args, deploy_config)
+
+		try:
+			dispatcher.run_validate()
+		except Exception as e:
+			# Logger should already have printed it our to logger.critical
+			sys.exit(1)
 
 		try:
 			dispatcher.run_generate()
