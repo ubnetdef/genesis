@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from genesis.deployment import BaseDeployer
 
@@ -7,6 +8,11 @@ class DeployFolder(BaseDeployer):
     STEP = "deploy-folder"
     NAME = "DeployFolder"
     DESC = "Meta deployer that handles creation of a deploy folder"
+
+    def __init__(self, step, config, args, deploy):
+        super().__init__(step, config, args, deploy)
+
+        self.logger = logging.getLogger(__name__)
 
     def generate(self, data):
         # Create step_dir
@@ -72,6 +78,11 @@ class AnsibleGalaxyRoleDeploy(BaseDeployer):
             },
         },
     }
+
+    def __init__(self, step, config, args, deploy):
+        super().__init__(step, config, args, deploy)
+
+        self.logger = logging.getLogger(__name__)
 
     def generate(self, data):
         # Create the directory

@@ -1,3 +1,4 @@
+import logging
 import os
 import yaml
 from genesis.deployment import BaseDeployer
@@ -67,6 +68,11 @@ class Ansible(BaseDeployer):
             },
         },
     }
+
+    def __init__(self, step, config, args, deploy):
+        super().__init__(step, config, args, deploy)
+
+        self.logger = logging.getLogger(__name__)
 
     def generate(self, data):
         # Inventory

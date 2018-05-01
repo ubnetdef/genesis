@@ -1,3 +1,4 @@
+import logging
 from genesis.deployment import BaseDeployer
 from genesis.deployment.custom import CUSTOM_POST_PROVISION_MAPPINGS
 
@@ -8,10 +9,11 @@ class PostProvisionDispatcher(BaseDeployer):
     DESC = "Configures a VM when configuration during deployment is unavailable"
 
     def __init__(self, step, config, args, deploy):
+        super().__init__(step, config, args, deploy)
+
         # Holder for any custom provisioners we have
         self.provisioners = []
-
-        super().__init__(step, config, args, deploy)
+        self.logger = logging.getLogger(__name__)
 
     def generate(self, data):
         # Determine if any of our 'hosts' require custom provisioning
