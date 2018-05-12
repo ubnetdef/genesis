@@ -10,11 +10,11 @@ class BasePlatform(UserDict):
     # Steps to run through the validator
     VALID_STEPS = ['_validate_config', '_validate_connection']
 
-    def __init__(self, provider, dry_run):
+    def __init__(self, provider, disable_platform_check):
         super().__init__()
 
         self.data = provider
-        self.dry_run = dry_run
+        self.disable_platform_check = disable_platform_check
 
         if self.SCHEMA is not None:
             self.validator = Validator(self.SCHEMA, allow_unknown=True)

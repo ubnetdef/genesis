@@ -41,6 +41,8 @@ def cli_main(base_dir=None):
                         help='Automatically remove output folder, if it exists', action='store_true', default=False)
     parser.add_argument('--disable-dependency', help='Disable dependency resolution',
                         action='store_true', default=False)
+    parser.add_argument('--disable-platform-check', help='Disable platform verification',
+                        action='store_true', default=False)
     parser.add_argument('--batch-deploys', help='Number to batch VM deploys to per step', type=int, default=9999)
     parser.add_argument('--dry-run', help='Perform a dry run only. This will not launch the competition infrastructure',
                         action='store_true', default=False)
@@ -129,7 +131,7 @@ def main(logger, args):
 
     # Create the config
     try:
-        config = Config(raw_config, args.dry_run)
+        config = Config(raw_config, args.disable_platform_check)
     except Exception as e:
         logger.critical('Error in config file: %s', e)
         fail(e, args.debug)
