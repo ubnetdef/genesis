@@ -1,10 +1,10 @@
-import hashlib
 import logging
 import os
 from abc import abstractmethod
 from distutils.dir_util import copy_tree
 from shutil import copyfile
 from cerberus import Validator
+from genesis.utils import hashid
 
 
 class BaseDeployer(object):
@@ -52,9 +52,6 @@ class BaseDeployer(object):
     @abstractmethod
     def execute(self, data):
         pass
-
-    def _id(self, name):
-        return hashlib.md5(name.encode('utf-8')).hexdigest()
 
     def _copy(self, src, dst):
         self.logger.debug('Copying %s -> %s', src, dst)

@@ -8,6 +8,7 @@ from genesis.deployment.postprovision import PostProvisionDispatcher
 from genesis.deployment.terraform import Terraform
 from genesis.deployment.utils import DeployFolder, CopyData, SetupCLIEnviron, AnsibleGalaxyRoleDeploy
 
+
 class DeployDispatcher(object):
     # Deployment objects, must be in order
     DEPLOYMENT_STEPS = [

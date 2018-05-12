@@ -1,3 +1,4 @@
+import hashlib
 import sys
 
 
@@ -35,7 +36,12 @@ def calculator_eval(expr):
     if not any(char in whitelist or char.isdigit() for char in expr):
         return 0
 
-    return eval(expr) #pylint: disable=eval-used
+    return eval(expr)  # pylint: disable=eval-used
+
+
+def hashid(name):
+    return hashlib.md5(name.encode('utf-8')).hexdigest()
+
 
 def fail(e, debug):
     if debug:

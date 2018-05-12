@@ -5,6 +5,7 @@ import sys
 from datetime import datetime
 from shutil import rmtree
 from genesis import __description__
+from genesis.config import Config
 from genesis.deploy import DeployStrategy
 from genesis.deployment.dispatcher import DeployDispatcher
 from genesis.parser import YamlParser
@@ -121,17 +122,24 @@ def main(logger, args):
     # Parse the config
     try:
         p = YamlParser(args)
-        config = p.parse()
+        raw_config = p.parse()
     except Exception as e:
         logger.critical('Error in parsing YAML: %s', e)
         fail(e, args.debug)
 
+    # Create the config
+    try:
+        config = Config(raw_config, args.dry_run)
+    except Exception as e:
+        logger.critical('Error in config file: %s', e)
+        fail(e, args.debug)
+
     # Print out some info about the config
-    logger.info('Competition Config: %s', config.get('name', 'No Name Provided'))
-    logger.info(config.get('description', 'N/A'))
+    logger.info('Competition Config: %s', config['name'])
+    logger.info(config['description'])
 
     # Deal with max teams
-    if 'max_teams' in config and args.teams > int(config['max_teams']):
+    if 'max_teams' in config and args.teams > config['max_teams']:
         logger.critical('Config only allows a max of %d teams to be created', config['max_teams'])
         sys.exit(1)
 

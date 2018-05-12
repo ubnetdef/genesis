@@ -16,21 +16,24 @@ class Ansible(BaseDeployer):
     SCHEMA = {
         'templates': {
             'type': 'list',
+            'required': True,
             'schema': {
                 'type': 'dict',
                 'schema': {
                     'os': {
                         'type': 'string',
+                        'required': True,
                         'allowed': BaseDeployer.ALL_OS,
                     },
                     'username': {
                         'type': 'string',
+                        'required': True,
                     },
                     'password': {
                         'type': 'string',
+                        'required': True,
                     },
                     'ansible_opts': {
-                        'required': False,
                         'type': 'dict',
                     },
                 },
@@ -38,20 +41,21 @@ class Ansible(BaseDeployer):
         },
         'hosts': {
             'type': 'list',
+            'required': True,
             'schema': {
                 'type': 'dict',
+                'required': True,
                 'schema': {
                     'roles': {
-                        'required': False,
                         'type': 'list',
                         'schema': {
                             'type': 'dict',
                             'schema': {
                                 'name': {
                                     'type': 'string',
+                                    'required': True,
                                 },
                                 'vars': {
-                                    'required': False,
                                     'type': 'dict',
                                 },
                             },
@@ -61,7 +65,6 @@ class Ansible(BaseDeployer):
             },
         },
         'role_variables': {
-            'required': False,
             'type': 'dict',
             'valueschema': {
                 'type': 'dict',

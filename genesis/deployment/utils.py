@@ -36,11 +36,9 @@ class CopyData(BaseDeployer):
 
     SCHEMA = {
         'has_included_data': {
-            'required': False,
             'type': 'boolean',
         },
         'included_copy_data': {
-            'required': False,
             'dependencies': ['has_included_data'],
             'type': 'list',
             'schema': {
@@ -71,7 +69,6 @@ class AnsibleGalaxyRoleDeploy(BaseDeployer):
 
     SCHEMA = {
         'ansible_galaxy_roles': {
-            'required': False,
             'type': 'list',
             'schema': {
                 'type': 'string',
