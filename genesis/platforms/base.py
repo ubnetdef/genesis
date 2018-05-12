@@ -34,8 +34,6 @@ class BasePlatform(UserDict):
         if self.SCHEMA is None:
             return True, []
 
-        print(self.SCHEMA)
-        print(self.data)
         return self.validator.validate(self.data), self.validator.errors
 
     def _validate_connection(self):

@@ -32,7 +32,7 @@ class Config(UserDict):
                     'type': {
                         'type': 'string',
                         'required': True,
-                        'allowed': [x for x in PLATFORM_MAPPINGS],
+                        'allowed': list(PLATFORM_MAPPINGS),
                     },
                 },
             },
