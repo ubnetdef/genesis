@@ -86,7 +86,7 @@ class VMwareNetworkFixer(BaseDeployer):
                     virtual_nic_spec.device.wakeOnLanEnabled = dev.wakeOnLanEnabled
 
                     # Connect things, if needed
-                    connectable = vim.vm.device.VirtualDevice.ConnectInfo()
+                    connectable = dev.connectable
                     changed = False
                     if not dev.connectable.startConnected:
                         connectable.startConnected = True
