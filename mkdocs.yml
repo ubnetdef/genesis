@@ -1,0 +1,6 @@
+site_name: Genesis
+repo_url: https://github.com/ubnetdef/genesis
+repo_name: GitHub
+
+pages:
+    - 'Introduction': 'index.md'
