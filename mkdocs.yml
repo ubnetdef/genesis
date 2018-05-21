@@ -4,8 +4,6 @@ repo_name: GitHub
 
 pages:
     - 'Introduction': 'index.md'
-    - 'Supported Platforms':
-      - 'VMware vSphere': 'platforms/vsphere.md'
     - 'Getting Started':
       - 'Getting Started': 'getting_started/start.md'
       - 'Supported OS': 'getting_started/supported_os.md'
@@ -13,6 +11,8 @@ pages:
       - 'Running Genesis': 'getting_started/running.md'
       - 'Terraform Primer': 'getting_started/terraform.md'
       - 'Ansible Primer': 'getting_started/ansible.md'
+    - 'Supported Platforms':
+      - 'VMware vSphere': 'platforms/vsphere.md'
     - 'Genesis Steps':
       - 'META: Ansible Role Deploy': 'steps/ansible_role_deploy.md'
       - 'META: Setup CLI ENV': 'steps/setup_cli_env.md'
