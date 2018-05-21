@@ -1,6 +1,27 @@
-site_name: Genesis
+site_name: Competition Genesis
 repo_url: https://github.com/ubnetdef/genesis
 repo_name: GitHub
 
 pages:
     - 'Introduction': 'index.md'
+    - 'Supported Platforms':
+      - 'VMware vSphere': 'platforms/vsphere.md'
+    - 'Getting Started':
+      - 'Getting Started': 'getting_started/start.md'
+      - 'Supported OS': 'getting_started/supported_os.md'
+      - 'Competition YAML File': 'getting_started/config.md'
+      - 'Running Genesis': 'getting_started/running.md'
+      - 'Terraform Primer': 'getting_started/terraform.md'
+      - 'Ansible Primer': 'getting_started/ansible.md'
+    - 'Genesis Steps':
+      - 'META: Ansible Role Deploy': 'steps/ansible_role_deploy.md'
+      - 'META: Setup CLI ENV': 'steps/setup_cli_env.md'
+      - 'META: Deploy Folder': 'steps/deploy_folder.md'
+      - 'Terraform': 'steps/terraform.md'
+      - 'META: VMware Network Fixer': 'steps/vmware_network_fixer.md'
+      - 'Post Provision Dispatcher': 'steps/post_provision_dispatcher.md'
+      - 'META: Copy Data': 'steps/copy_data.md'
+      - 'Ansible': 'steps/ansible.md'
+    - 'Troubleshooting':
+      - 'Known Issues': 'troubleshooting/known_issues.md'
+      - 'Partially Failed Deployment': 'troubleshooting/partial_fail.md'
