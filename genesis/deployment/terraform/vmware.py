@@ -106,6 +106,9 @@ class VMwareGenerator(object):
             '\tscsi_type = "${{data.vsphere_virtual_machine.{}.scsi_type}}"'.format(hashid(host['template']))
         ]
 
+        if 'firmware' in host:
+            out.append('\tfirmware = "{}"'.format(host['firmware']))
+
         # If the machine requires custom post provisioning, disable waiting for a network
         if template['os'] in self.tf.CUSTOM_POST_PROVISION_HOSTS:
             out.append('\twait_for_guest_net_routable = false')

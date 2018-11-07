@@ -97,6 +97,10 @@ class Terraform(BaseDeployer):
                         'required': True,
                         'min': 128,
                     },
+                    'firmware': {
+                        'type': 'string',
+                        'allowed': ['bios', 'EFI'],
+                    },
                     'disks': {
                         'type': 'list',
                         'required': True,
